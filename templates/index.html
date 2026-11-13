@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="A modern, intelligent Tic-Tac-Toe web app built with Python Flask and Minimax AI.">
+  <title>Tic-Tac-Toe | Python & Flask</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="app-container">
+    <header class="app-header">
+      <div class="header-content">
+        <div class="brand">
+          <span class="brand-badge">Python + Flask</span>
+          <h1>Tic-Tac-Toe</h1>
+        </div>
+        <div class="header-actions">
+          <button id="soundToggle" class="icon-btn" aria-label="Toggle sound" title="Toggle sound effects">
+            <span id="soundIcon">🔊</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main class="main-content">
+      <!-- Game Controls & Settings -->
+      <section class="controls-panel" aria-label="Game controls">
+        <div class="control-group">
+          <label for="gameMode">Game Mode</label>
+          <select id="gameMode" class="styled-select" aria-label="Select game mode">
+            <option value="ai_hard" selected>🤖 AI: Unbeatable (Minimax)</option>
+            <option value="ai_medium">🤖 AI: Medium</option>
+            <option value="ai_easy">🤖 AI: Easy</option>
+            <option value="pvp">👥 Pass & Play (2 Players)</option>
+          </select>
+        </div>
+
+        <div class="control-group" id="playerChoiceGroup">
+          <label id="symbolLabel">Play As</label>
+          <div class="symbol-toggle" role="radiogroup" aria-labelledby="symbolLabel">
+            <button type="button" class="symbol-btn active" data-symbol="X" role="radio" aria-checked="true">
+              <span class="x-glyph">✕</span> Play as X
+            </button>
+            <button type="button" class="symbol-btn" data-symbol="O" role="radio" aria-checked="false">
+              <span class="o-glyph">○</span> Play as O
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Scoreboard -->
+      <section class="scoreboard" aria-label="Score board">
+        <div class="score-card player-x-card" id="cardX">
+          <div class="score-header">
+            <span class="symbol-tag tag-x">✕</span>
+            <span class="player-name" id="nameX">Player X</span>
+          </div>
+          <span class="score-number" id="scoreX" aria-live="polite">0</span>
+        </div>
+
+        <div class="score-card ties-card" id="cardTies">
+          <div class="score-header">
+            <span class="symbol-tag tag-tie">🤝</span>
+            <span class="player-name">Ties</span>
+          </div>
+          <span class="score-number" id="scoreTies" aria-live="polite">0</span>
+        </div>
+
+        <div class="score-card player-o-card" id="cardO">
+          <div class="score-header">
+            <span class="symbol-tag tag-o">○</span>
+            <span class="player-name" id="nameO">AI (O)</span>
+          </div>
+          <span class="score-number" id="scoreO" aria-live="polite">0</span>
+        </div>
+      </section>
+
+      <!-- Status Banner -->
+      <div class="status-banner" id="statusBanner" role="status" aria-live="assertive">
+        <span class="turn-indicator-dot" id="turnDot"></span>
+        <span class="status-text" id="statusText">Your turn (X)</span>
+      </div>
+
+      <!-- Tic-Tac-Toe Board -->
+      <section class="board-wrapper">
+        <div 
+          class="board-grid" 
+          id="boardGrid" 
+          role="grid" 
+          aria-label="Tic-Tac-Toe board 3 by 3"
+        >
+          <!-- Cells 0 to 8 generated dynamically or rendered here -->
+          <div role="row" class="grid-row">
+            <button class="board-cell" role="gridcell" data-index="0" aria-label="Row 1, Column 1" tabindex="0"></button>
+            <button class="board-cell" role="gridcell" data-index="1" aria-label="Row 1, Column 2" tabindex="0"></button>
+            <button class="board-cell" role="gridcell" data-index="2" aria-label="Row 1, Column 3" tabindex="0"></button>
+          </div>
+          <div role="row" class="grid-row">
+            <button class="board-cell" role="gridcell" data-index="3" aria-label="Row 2, Column 1" tabindex="0"></button>
+            <button class="board-cell" role="gridcell" data-index="4" aria-label="Row 2, Column 2" tabindex="0"></button>
+            <button class="board-cell" role="gridcell" data-index="5" aria-label="Row 2, Column 3" tabindex="0"></button>
+          </div>
+          <div role="row" class="grid-row">
+            <button class="board-cell" role="gridcell" data-index="6" aria-label="Row 3, Column 1" tabindex="0"></button>
+            <button class="board-cell" role="gridcell" data-index="7" aria-label="Row 3, Column 2" tabindex="0"></button>
+            <button class="board-cell" role="gridcell" data-index="8" aria-label="Row 3, Column 3" tabindex="0"></button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Action Buttons -->
+      <section class="action-buttons">
+        <button id="btnResetRound" class="btn btn-primary">
+          <span class="btn-icon">🔄</span> Next Round
+        </button>
+        <button id="btnUndo" class="btn btn-secondary">
+          <span class="btn-icon">↩️</span> Undo
+        </button>
+        <button id="btnResetScores" class="btn btn-ghost" title="Reset score counts">
+          Reset Scores
+        </button>
+      </section>
+    </main>
+
+    <footer class="app-footer">
+      <p>Python Flask backend with Minimax Decision Tree Engine &bull; Keyboard navigable (Arrow keys + Enter)</p>
+    </footer>
+  </div>
+
+  <canvas id="confettiCanvas" class="confetti-canvas"></canvas>
+
+  <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
